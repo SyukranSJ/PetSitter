@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Minimal manifest-resolvable theme; real theming via Compose -->
+    <style name="Theme.CareTail" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:statusBarColor">@android:color/white</item>
+        <item name="android:navigationBarColor">@android:color/white</item>
+    </style>
+</resources>
