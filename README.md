@@ -1,16 +1,5 @@
 # CareTail: A Transparent Mobile App for Verified Pet Care and Daily Activity Tracking
 
-UG Year 3 COMP3040  
-Requirements and Analysis Coursework 1
-
-Group F:  
-Thaqif Syahmi 20607625  
-Syukran Shabaruddin 20512078  
-Viishal Avinash 20617818
-
-Module Convener : Dr Nabil El Ioini  
-Year: 2025
-
 # [Problem Statement and Motivation]
 
 The problem we aim to solve with our mobile application is the low awareness of, and the lack of easy access to, readily available pet caretakers in situations where a person may need to leave their pets unattended for prolonged periods of time, such as on holidays or work trips. To Expand on these problems, information on petcare specialists are not widely known and it may not be very suitable for a client to contact an unlicensed or impromptu hire with little or no experience in pet-taking. Our app's goal is to address these issues; allowing users to easily browse and learn about local trusted or licensed petcare experts as well as provide assistance regarding both on-site and off-site service options.
