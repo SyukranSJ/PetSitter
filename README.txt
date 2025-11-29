@@ -1,0 +1,10 @@
+CareTail — CW2-ready Android app (Kotlin + Compose + Material3, playful theme)
+
+• AGP 8.13 + Gradle 8.13 + Kotlin 2.0.21 (JDK 17)
+• Compose BOM 2024.11.00, Material3, Navigation
+• AndroidX enabled (gradle.properties)
+• Pixel 2 (Android 11) compatible
+• Mock data + 8 screens, dark/light toggle
+
+Open in Android Studio → Sync → Run.
+If Gradle wrapper is requested, choose Android Studio's default Gradle.
