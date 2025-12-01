@@ -8,11 +8,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.caretail.ui.common.CareTailTheme
 import com.caretail.ui.screens.*
+import com.caretail.viewmodel.AuthViewModel
+import com.caretail.viewmodel.CareTailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -22,6 +25,10 @@ class MainActivity : ComponentActivity() {
             var dark by remember { mutableStateOf(false) }
             CareTailTheme(darkTheme = dark) {
                 val nav = rememberNavController()
+
+                // 🔥 CREATE SHARED VIEWMODELS HERE (VERY IMPORTANT)
+                val authViewModel: AuthViewModel = viewModel()
+                val careTailViewModel: CareTailViewModel = viewModel()
 
                 Scaffold(
                     topBar = {
@@ -36,8 +43,7 @@ class MainActivity : ComponentActivity() {
                                         onCheckedChange = { dark = it }
                                     )
                                 }
-                            },
-                            colors = TopAppBarDefaults.centerAlignedTopAppBarColors()
+                            }
                         )
                     }
                 ) { inner ->
@@ -47,35 +53,75 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(inner)
                     ) {
 
-                        // 🔹 Auth & Landing screens
+                        // -------------------------
+                        // AUTH SCREENS
+                        // -------------------------
                         composable("landing") { LandingScreen(nav) }
-                        composable("login") { LoginScreen(nav) }
-                        composable("register") { RegisterScreen(nav) }
+                        composable("login") { LoginScreen(nav, authViewModel) }
+                        composable("register") { RegisterScreen(nav, authViewModel) }
 
-                        // 🔹 Owner Screens
-                        composable("owner_home") { OwnerHomeScreen(nav) }
-                        composable("owner_profile") { OwnerProfileScreen(nav) }
-                        composable("owner_pet_list") { OwnerPetListScreen(nav) }
-                        composable("owner_add_pet") { AddPetScreen(nav) }
-
-                        // 🔹 NEW ➜ Edit Pet Screen
-                        composable("owner_edit_pet/{petId}") { backStackEntry ->
-                            val petId = backStackEntry.arguments?.getString("petId") ?: ""
-                            EditPetScreen(nav, petId)
+                        // -------------------------
+                        // OWNER SCREENS
+                        // -------------------------
+                        composable("owner_home") {
+                            OwnerHomeScreen(nav, authViewModel)
                         }
 
-                        // 🔹 Sitter Screens
-                        composable("sitter_home") { SitterHomeScreen(nav) }
+                        composable("owner_profile") {
+                            OwnerProfileScreen(nav, authViewModel)
+                        }
+
+                        composable("owner_pet_list") {
+                            OwnerPetListScreen(
+                                nav = nav,
+                                authViewModel = authViewModel,
+                                careTailViewModel = careTailViewModel
+                            )
+                        }
+
+                        composable("owner_add_pet") {
+                            AddPetScreen(
+                                nav = nav,
+                                authViewModel = authViewModel,
+                                careTailViewModel = careTailViewModel
+                            )
+                        }
+
+                        // -------------------------
+                        // EDIT PET (FIXED)
+                        // -------------------------
+                        composable("owner_edit_pet/{petId}") { backStackEntry ->
+                            val petId = backStackEntry.arguments?.getString("petId") ?: ""
+
+                            EditPetScreen(
+                                nav = nav,
+                                petId = petId,
+                                careTailViewModel = careTailViewModel   // 🔥 USE SAME VIEWMODEL
+                            )
+                        }
+
+                        // -------------------------
+                        // SITTER SCREENS
+                        // -------------------------
+                        composable("sitter_home") {
+                            SitterHomeScreen(nav, authViewModel)
+                        }
                         composable("pending_orders") { PendingOrdersScreen(nav) }
                         composable("assigned_pets") { AssignedPetsScreen(nav) }
-                        composable("sitter_profile") { SitterProfileScreen(nav) }
+                        composable("sitter_profile") { SitterProfileScreen(nav, authViewModel) }
 
-                        // 🔹 Booking & Reports
-                        composable("booking") { BookingScreen(nav) }
+                        // -------------------------
+                        // BOOKING / CHECKLIST / REPORTS
+                        // -------------------------
+                        composable("booking") {
+                            BookingScreen(nav, authViewModel, careTailViewModel)
+                        }
                         composable("checklist") { ChecklistScreen(nav) }
                         composable("daily_report") { DailyReportScreen(nav) }
 
-                        // 🔹 Role selection
+                        // -------------------------
+                        // ROLE SELECT
+                        // -------------------------
                         composable("role_select") { RoleSelectScreen(nav) }
                     }
                 }
