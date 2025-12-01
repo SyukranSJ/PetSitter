@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,20 +25,34 @@ import kotlinx.coroutines.launch
 fun EditPetScreen(
     nav: NavController,
     petId: String,
-    authViewModel: AuthViewModel = viewModel(),
-    careTailViewModel: CareTailViewModel = viewModel()
+    careTailViewModel: CareTailViewModel      // 🔥 use shared ViewModel only
 ) {
     val scope = rememberCoroutineScope()
 
-    val currentUser = authViewModel.currentUser.collectAsState().value
-    val pet = careTailViewModel.getPetById(petId)
+    // Observe pets list
+    val pets by careTailViewModel.pets.collectAsState()
 
-    if (pet == null) {
-        Text("Pet not found.")
+    // Wait until pets load
+    if (pets.isEmpty()) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) { CircularProgressIndicator() }
         return
     }
 
-    // Pre-filled editable fields
+    // Find the pet
+    val pet = pets.firstOrNull { it.id == petId }
+
+    if (pet == null) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) { Text("Pet not found.") }
+        return
+    }
+
+    // Editable fields
     var name by remember { mutableStateOf(pet.name) }
     var breed by remember { mutableStateOf(pet.breed) }
     var age by remember { mutableStateOf(pet.age.toString()) }
@@ -58,10 +73,9 @@ fun EditPetScreen(
                 title = { Text("Edit Pet") },
                 navigationIcon = {
                     IconButton(onClick = { nav.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
                     }
                 },
-
                 actions = {
                     IconButton(onClick = {
                         careTailViewModel.deletePet(
@@ -72,7 +86,7 @@ fun EditPetScreen(
                             if (success) nav.popBackStack()
                         }
                     }) {
-                        Icon(Icons.Filled.Delete, contentDescription = "Delete Pet")
+                        Icon(Icons.Default.Delete, "Delete Pet")
                     }
                 }
             )
@@ -88,7 +102,7 @@ fun EditPetScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
-            // Type dropdown
+            // Pet type dropdown
             ExposedDropdownMenuBox(
                 expanded = typeExpanded,
                 onExpandedChange = { typeExpanded = !typeExpanded }
@@ -100,9 +114,7 @@ fun EditPetScreen(
                     label = { Text("Pet Type") },
                     modifier = Modifier.fillMaxWidth(),
                     trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(
-                            expanded = typeExpanded
-                        )
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded)
                     }
                 )
 
@@ -122,58 +134,32 @@ fun EditPetScreen(
                 }
             }
 
-            OutlinedTextField(
-                value = name, onValueChange = { name = it },
-                label = { Text("Pet Name") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            // All form fields
+            OutlinedTextField(name, { name = it }, label = { Text("Pet Name") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(breed, { breed = it }, label = { Text("Breed") }, modifier = Modifier.fillMaxWidth())
 
             OutlinedTextField(
-                value = breed, onValueChange = { breed = it },
-                label = { Text("Breed") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = age, onValueChange = { age = it },
+                age, { age = it },
                 label = { Text("Age") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
-                value = weight, onValueChange = { weight = it },
+                weight, { weight = it },
                 label = { Text("Weight (kg)") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextField(
-                value = color, onValueChange = { color = it },
-                label = { Text("Color") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = medicalInfo, onValueChange = { medicalInfo = it },
-                label = { Text("Medical Info") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = specialNeeds, onValueChange = { specialNeeds = it },
-                label = { Text("Special Needs") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = feedingSchedule, onValueChange = { feedingSchedule = it },
-                label = { Text("Feeding Schedule") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            OutlinedTextField(color, { color = it }, label = { Text("Color") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(medicalInfo, { medicalInfo = it }, label = { Text("Medical Info") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(specialNeeds, { specialNeeds = it }, label = { Text("Special Needs") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(feedingSchedule, { feedingSchedule = it }, label = { Text("Feeding Schedule") }, modifier = Modifier.fillMaxWidth())
 
             Spacer(Modifier.height(16.dp))
 
+            // Save button
             Button(
                 onClick = {
                     val updates = mapOf(
