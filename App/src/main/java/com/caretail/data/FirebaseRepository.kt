@@ -249,11 +249,17 @@ class FirebaseRepository {
             Result.failure(e)
         }
     }
-    
+
     suspend fun deletePet(petId: String): Result<Unit> {
-        return updatePet(petId, mapOf("isActive" to false))
+        return try {
+            database.child(PETS_PATH).child(petId).removeValue().await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
-    
+
+
     // ==================== BOOKING OPERATIONS ====================
     
     /**
