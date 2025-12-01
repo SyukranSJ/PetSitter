@@ -10,18 +10,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.compose.ui.Alignment
 import com.caretail.viewmodel.AuthViewModel
 import com.caretail.viewmodel.CareTailViewModel
 import com.caretail.viewmodel.DataState
-import androidx.compose.ui.Alignment
 
 @Composable
 fun OwnerPetListScreen(
     nav: NavController,
-    authViewModel: AuthViewModel = viewModel(),
-    careTailViewModel: CareTailViewModel = viewModel()
+    authViewModel: AuthViewModel,          // ❗️ DO NOT create new ViewModel()
+    careTailViewModel: CareTailViewModel   // ❗️ Use the SAME ViewModel from NavGraph
 ) {
     val currentUser by authViewModel.currentUser.collectAsState()
     val pets by careTailViewModel.pets.collectAsState()
@@ -80,7 +79,10 @@ fun OwnerPetListScreen(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("You have no pets yet.", style = MaterialTheme.typography.titleMedium)
+                            Text(
+                                "You have no pets yet.",
+                                style = MaterialTheme.typography.titleMedium
+                            )
                         }
                     } else {
                         LazyColumn {
