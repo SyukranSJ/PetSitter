@@ -17,7 +17,7 @@ class FirebaseRepository {
     
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database: DatabaseReference = FirebaseDatabase.getInstance(
-        "https://caretail-unm-default-rtdb.asia-southeast1.firebasedatabase.app"
+        ""
     ).reference
 
 
