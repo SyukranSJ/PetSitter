@@ -26,7 +26,6 @@ class MainActivity : ComponentActivity() {
             CareTailTheme(darkTheme = dark) {
                 val nav = rememberNavController()
 
-                // 🔥 CREATE SHARED VIEWMODELS HERE (VERY IMPORTANT)
                 val authViewModel: AuthViewModel = viewModel()
                 val careTailViewModel: CareTailViewModel = viewModel()
 
@@ -96,7 +95,7 @@ class MainActivity : ComponentActivity() {
                             EditPetScreen(
                                 nav = nav,
                                 petId = petId,
-                                careTailViewModel = careTailViewModel   // 🔥 USE SAME VIEWMODEL
+                                careTailViewModel = careTailViewModel  
                             )
                         }
 
